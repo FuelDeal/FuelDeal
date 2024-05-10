@@ -1,0 +1,64 @@
+*{
+    font-family: 'Poppins', sans-serif;
+    margin:0m; padding: 0;
+    box-sizing: border-box;
+    outline: none; border: none;
+    text-decoration: none;
+    transition: .2s linear;
+}
+
+.container{
+    /*background:linear-gradient(45deg,green, red);*/
+    background:linear-gradient(45deg,rgb(0, 145, 161), rgb(0, 183, 183));
+    padding:15px 9%;
+    padding-bottom: 100px;
+}
+
+
+
+.heading{
+    text-align: center;
+    padding-bottom: 15px;
+    color: #000000;
+    font-size: 50px;
+}
+
+.container .box-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 2fr));
+    gap: 15px;
+}
+
+.container .box-container .box{
+    border-radius:5px;
+    background: #ffffff;
+    padding: 30px 20px;
+}
+
+
+p.f91{
+    padding-bottom: 15px;
+    color: #00d068;
+    font-size: 30px;
+}
+
+p.f95{
+    padding-bottom: 15px;
+    color: #d80024;
+    font-size: 30px;
+}
+.container .box-container .box .btn {
+    margin-top: 10px;
+    background-color: #3498db; /* Button background color */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Padding for the button */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.container .box-container .box .btn:hover {
+    background-color: #2980b9; /* Change background color on hover */
+}
