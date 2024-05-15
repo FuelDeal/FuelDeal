@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../assets/logo.png';
 import '../App.css';
-import { toyota_car } from '../components/toyota_cars_response';
 
 function Home() {
   const [selectedManufacturer, setSelectedManufacturer] = useState('');
+  const [manufacturers, setManufacturers] = useState([]);
   const [showCars, setShowCars] = useState(false);
+
+  useEffect(() => {
+    fetch("https://6040-2001-16a2-fd3a-1c00-dd46-2b94-ad34-919b.ngrok-free.app/FuelDeal/api/manu")
+      .then(response => response.json())
+      .then(data => {
+        setManufacturers(data);
+      })
+      .catch(error => {
+        console.error('Error fetching data: ', error);
+      });
+  }, []);
 
   const handleChange = (event) => {
     setSelectedManufacturer(event.target.value);
+    console.log("Selected Manufacturer:", event.target.value);
   };
-
+  
   const handleSubmit = (event) => {
     event.preventDefault();
-    setShowCars(selectedManufacturer === "Toyota");
+    setShowCars(true);
   };
 
   return (
@@ -30,18 +42,17 @@ function Home() {
             className="select-box"
           >
             <option value="">Pick from the list</option>
-            <option value="Toyota">Toyota</option>
+            {manufacturers.map((manufacturer) => (
+              <option key={manufacturer.id} value={manufacturer.manu_name}>
+                {manufacturer.manu_name}
+              </option>
+            ))}
           </select>
           <button type="submit" className="submit-button">Next</button>
         </form>
         {showCars && (
           <div className="car-list">
-            {toyota_car.map((car, index) => (
-              <div key={index} className="car-card">
-                <h4>Toyota</h4> 
-                <h3>{car.model_name} {new Date(car.year).getFullYear()}</h3>
-              </div>
-            ))}
+            
           </div>
         )}
       </main>
