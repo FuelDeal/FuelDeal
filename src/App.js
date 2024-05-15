@@ -1,10 +1,11 @@
-import logo from './assets/logo.png';  // Ensure the path is correct based on your project structure
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import logo from './assets/logo.png';
 import Home from './components/Home';
 import About from './components/About';
 import Login from './components/Login';
 import SignUp from './components/Signup';
+import CarDetails from './components/CarDetails'; 
 import './App.css';
 
 function App() {
@@ -12,7 +13,7 @@ function App() {
     <Router>
       <div className="App">
         <header className="header">
-          <img src={logo} alt="Fuel Deal Logo" className="logo" /> {/* Replace h1 with img */}
+          <img src={logo} alt="Fuel Deal Logo" className="logo" />
           <nav className="nav-container">
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/about" className="nav-link">About</Link>
@@ -25,11 +26,11 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/car-details/:model/:year" element={<CarDetails />} /> 
         </Routes>
       </div>
     </Router>
   );
 }
-
 
 export default App;

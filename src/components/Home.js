@@ -1,31 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import '../App.css';
+import manufacturersData from './cars_manu';
 
 function Home() {
   const [selectedManufacturer, setSelectedManufacturer] = useState('');
-  const [manufacturers, setManufacturers] = useState([]);
+  const [manufacturers, setManufacturers] = useState(manufacturersData);
+  const [cars, setCars] = useState([]);
   const [showCars, setShowCars] = useState(false);
-
-  useEffect(() => {
-    fetch("https://6040-2001-16a2-fd3a-1c00-dd46-2b94-ad34-919b.ngrok-free.app/FuelDeal/api/manu")
-      .then(response => response.json())
-      .then(data => {
-        setManufacturers(data);
-      })
-      .catch(error => {
-        console.error('Error fetching data: ', error);
-      });
-  }, []);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setSelectedManufacturer(event.target.value);
-    console.log("Selected Manufacturer:", event.target.value);
   };
-  
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setShowCars(true);
+    if (selectedManufacturer) {
+      const manufacturerFile = manufacturers.find(m => m.manu_name === selectedManufacturer).manu_name.toLowerCase();
+      try {
+        const module = await import(`./${manufacturerFile}.js`);
+        setCars(module.default);
+        setShowCars(true);
+      } catch (error) {
+        console.error('Error loading manufacturer data:', error);
+        setCars([]);
+      }
+    }
+  };
+
+  const handleCarClick = (model, year) => {
+    if (model.toLowerCase() === 'corolla' && year.includes('2022')) {
+      navigate(`/car-details/${model}/${year.split('-')[0]}`);
+    }
   };
 
   return (
@@ -36,7 +44,7 @@ function Home() {
         </div>
         <h2>Select the manufacturer</h2>
         <form onSubmit={handleSubmit} className="form-content">
-          <select 
+          <select
             value={selectedManufacturer}
             onChange={handleChange}
             className="select-box"
@@ -50,11 +58,16 @@ function Home() {
           </select>
           <button type="submit" className="submit-button">Next</button>
         </form>
-        {showCars && (
-          <div className="car-list">
-            
+        {showCars && cars.map(car => (
+          <div key={car.id} className="car-card" onClick={() => handleCarClick(car.model_name, car.year)}>
+            <img src={car.image} alt={`${car.model_name}`} style={{ width: '300px', height: 'auto' }} />
+            <h3>{car.model_name}</h3>
+              <p>Year: {car.year}</p>
+              <p>Price: {car.price} SR</p>
+              <p>Tank Capacity: {car.tank} liters</p>
+              <p>Fuel Consumption: {car.fuel_cons} km/L</p>
           </div>
-        )}
+        ))}
       </main>
     </div>
   );
