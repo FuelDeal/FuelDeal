@@ -9,6 +9,25 @@ function Home() {
   const [manufacturers, setManufacturers] = useState(manufacturersData);
   const [cars, setCars] = useState([]);
   const [showCars, setShowCars] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/FuelDeal/api/manu");
+        console.log(response)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json(); 
+        setManufacturers(data);
+        console.log(data); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
