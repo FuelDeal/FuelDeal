@@ -1,33 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import '../App.css';
-import manufacturersData from './cars_manu';
 
 function Home() {
   const [selectedManufacturer, setSelectedManufacturer] = useState('');
-  const [manufacturers, setManufacturers] = useState(manufacturersData);
+  const [manufacturer, setManufacturer] = useState([]);
+  const [manufacturers, setManufacturers] = useState([]);
   const [cars, setCars] = useState([]);
   const [showCars, setShowCars] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchManufacturers = async () => {
       try {
         const response = await fetch("http://127.0.0.1:8000/FuelDeal/api/manu");
-        console.log(response)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json(); 
+        const data = await response.json();
         setManufacturers(data);
-        console.log(data); 
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching manufacturers:', error);
       }
     };
 
-    fetchData();
+    fetchManufacturers();
   }, []);
+
   const navigate = useNavigate();
 
   const handleChange = (event) => {
@@ -37,22 +36,30 @@ function Home() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (selectedManufacturer) {
-      const manufacturerFile = manufacturers.find(m => m.manu_name === selectedManufacturer).manu_name.toLowerCase();
-      try {
-        const module = await import(`./${manufacturerFile}.js`);
-        setCars(module.default);
-        setShowCars(true);
-      } catch (error) {
-        console.error('Error loading manufacturer data:', error);
-        setCars([]);
+      const selectedManu = manufacturers.find(m => m.manu_name === selectedManufacturer);
+      if (selectedManu) {
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/FuelDeal/api/manu/cars_list/${selectedManu.id}`);
+          console.log(selectedManu);
+          setManufacturer(selectedManu);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setCars(Array.isArray(data) ? data : []);
+                setSelectedManufacturer(selectedManu.id)
+          setShowCars(true);
+        } catch (error) {
+          console.error('Error fetching cars:', error);
+          setCars([]);
+        }
       }
     }
   };
 
-  const handleCarClick = (model, year) => {
-    if (model.toLowerCase() === 'corolla' && year.includes('2022')) {
-      navigate(`/car-details/${model}/${year.split('-')[0]}`);
-    }
+  const handleCarClick = (manufacturerName, manufacturerId, carId) => {
+    console.log(carId);
+    navigate(`/car-details/${manufacturerName}/${manufacturerId}/${carId}`);
   };
 
   return (
@@ -77,9 +84,9 @@ function Home() {
           </select>
           <button type="submit" className="submit-button">Next</button>
         </form>
-        {showCars && cars.map(car => (
-          <div key={car.id} className="car-card" onClick={() => handleCarClick(car.model_name, car.year)}>
-            <img src={car.image} alt={`${car.model_name}`} style={{ width: '300px', height: 'auto' }} />
+        {showCars && Array.isArray(cars) && cars.map(car => (
+          <div key={car.id} className="car-card" onClick={() => handleCarClick(manufacturer.manu_name,manufacturer.id, car.id)}>
+            <img src={`https://fueldealpics.blob.core.windows.net/cars/${car.model_name.toLowerCase()}.png`} alt={`${car.model_name}`} style={{ width: '300px', height: 'auto' }} />
             <h3>{car.model_name}</h3>
               <p>Year: {car.year}</p>
               <p>Price: {car.price} SR</p>

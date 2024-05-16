@@ -1,29 +1,117 @@
 import { useParams } from 'react-router-dom';
 import Rating from "./FuelEconomy";
+import { useEffect, useState } from 'react';
 
 const CarDetails = () => {
-  const { model, year } = useParams();  
+  const { manufacturer_name,manufacturer_id, car_id } = useParams();
+  const [car, setCar] = useState([]);
+  const [oilPrice91, setOilPrice91] = useState(1);
+  const [oilPrice95, setOilPrice95] = useState(1);
+  const [annualFuelCost, setAnnualFuelCost] = useState(0);
 
-  const carName = `${model} ${year}`;  
+  const [data, setData] = useState(0);
+  const [fuelPrice91, setFuelPrice91] = useState(1);
+  const [fuelPrice95, setFuelPrice95] = useState(1);
+  const [distance, setDistance] = useState(500);
 
-  return (
+   useEffect(()  => {
+    console.log('hi')
+    console.log(car_id+' '+manufacturer_id);
+    const fetchCarDetails = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/FuelDeal/api/manu/cars_list/${manufacturer_id}/car/${car_id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setCar(data);
+       // setFuelPrice91((car.tank*oilPrice91)*data);
+        console.log(car);
+      } catch (error) {
+        console.error('Error fetching car details:', error);
+      }
+    };
+    const fetchOilPrices = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/FuelDeal/api/getOilPrice`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setOilPrice91(data.oil91)
+        setOilPrice95(data.oil95)
+      } catch (error) {
+        console.error('Error fetching car details:', error);
+      }
+    };
+    function getAnnualFuelCost(){
+      let months = 12;
+      let factory = 2;
+      return (((oilPrice91+oilPrice95)/2)*car.tank*months*factory);
+    }
+    fetchCarDetails();
+    fetchOilPrices();
+    setAnnualFuelCost(getAnnualFuelCost);
+  }, []);
+
+  useEffect(()=>{
+      const fetchOilPrices = async () => {
+          try {
+            const response = await fetch(`http://127.0.0.1:8000/FuelDeal/api/getOilPrice`);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setOilPrice91(data.oil91)
+            setOilPrice95(data.oil95)
+          } catch (error) {
+            console.error('Error fetching car details:', error);
+          }
+        };
+        fetchOilPrices();
+  },[])
+  
+  useEffect(()=>{
+      const fuelCons = 17.6;
+      // if(car != 1){
+        setFuelPrice91((car.tank*oilPrice91)*data)
+        setFuelPrice95((car.tank*oilPrice95)*data)
+        setDistance(data*(fuelCons*car.tank))
+      // }
+  }, [data])
+
+
+  return ( car && 
     <>
       <div className="car-details-wrapper">
-          <h1>{carName}</h1>
+          <h1>{manufacturer_name} {car.model_name}</h1>
           <div className="card-details">
               <br/>
               <div className="fuel-prices">
-              <Rating/>
+              <div>
+            <div>
+            <span className="c-green">{fuelPrice91.toFixed(0)}<sup className="oil-type">91</sup></span>
+                <span className="in-between"> I </span>
+                <span className="c-red">{fuelPrice95.toFixed(0)}<sup className="oil-type">95</sup></span>
+                <p id='sr'>In Saudi Riyals</p>
+                
+            </div>
+            <br/>
+        <div className="slider-content"><p>Empty</p> <input type="range" min='0' max="1" step="0.1" value={data} onChange={(e)=>setData(e.target.value)}/> <p>Full</p> </div>
+        <p>You can drive for {distance.toFixed(0)} Km</p>
+        <hr/>
+        <br/>
+        </div>
               </div>
               <div className="car-info">
-              <div className="fuel-econmy">Car Price: 77,000 <p id="sr">SR</p></div>
-                  <p>Tank Size: 65L</p>
-                  <div className="fuel-econmy">Fuel Economy: 17L/Km <p className="badge">Good</p></div>
+              <div className="fuel-econmy">Car Price: {car.price} <p id="sr">SR</p></div>
+                  <p>Tank Size: {car.tank}</p>
+                  <div className="fuel-econmy">Fuel Economy: {car.fuel_cons}km/L <p className="badge">Good</p></div>
                   <br/>
-                  <div className="fuel-econmy">Fuel Annual Cost: 1540 <p id="sr">SR</p></div>
+                  <div className="fuel-econmy">Fuel Annual Cost: {annualFuelCost} <p id="sr">SR</p></div>
               </div>
           </div>
-          <img className="car-image" src={`https://fueldealpics.blob.core.windows.net/cars/${model.toLowerCase()}.png`} alt={`${model} Image`} />
+          <img src={`https://fueldealpics.blob.core.windows.net/cars/${car.model_name}.png`} alt={`${car.model_name}`} />
       </div>
     </>
   )
