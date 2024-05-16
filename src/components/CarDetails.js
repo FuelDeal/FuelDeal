@@ -98,7 +98,7 @@ const CarDetails = () => {
             </div>
             <br/>
         <div className="slider-content"><p>Empty</p> <input type="range" min='0' max="1" step="0.1" value={data} onChange={(e)=>setData(e.target.value)}/> <p>Full</p> </div>
-        <p>You can drive for {distance.toFixed(0)} Km</p>
+        <h3>You can drive for {distance.toFixed(0)} Km</h3>
         <hr/>
         <br/>
         </div>

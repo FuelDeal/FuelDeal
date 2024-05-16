@@ -85,6 +85,7 @@
 }
 
 .card-details {
+  font-size: large;
   float: left;
   height: 500px;
   width: 500px;
@@ -98,6 +99,7 @@
   width: 450px;
   text-align: start;
   margin-left: 20px;
+  font-size: 20px;
 }
 
 .car-image {
