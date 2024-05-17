@@ -88,10 +88,10 @@
   font-size: large;
   float: left;
   height: 500px;
-  width: 500px;
+  width: 600px;
   margin-left: 250px;
   padding: 5px;
-  background-color: #f9f9f9;
+  background-color: #f0f0f0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -102,6 +102,7 @@
   font-size: 20px;
 }
 
+
 .car-image {
   height: auto;
   margin: 2px;
@@ -109,7 +110,6 @@
 
 .badge {
   color: #fff;
-  background-color: #28a745;
   display: inline-block;
   padding: .25em .4em;
   font-size: 75%;
@@ -120,6 +120,23 @@
   vertical-align: baseline;
   border-radius: .25rem;
 }
+
+.excellent{
+  background-color: green;
+}
+
+.good{
+  background-color: rgb(94, 212, 94);
+}
+
+.average{
+  background-color: coral;
+}
+
+.very-poor{
+  background-color: red;
+}
+
 
 .fuel-econmy p {
   display: inline;

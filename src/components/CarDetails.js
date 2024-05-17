@@ -9,10 +9,12 @@ const CarDetails = () => {
   const [oilPrice95, setOilPrice95] = useState(1);
   const [annualFuelCost, setAnnualFuelCost] = useState(0);
 
-  const [data, setData] = useState(0);
+  const [data, setData] = useState(1);
   const [fuelPrice91, setFuelPrice91] = useState(1);
   const [fuelPrice95, setFuelPrice95] = useState(1);
   const [distance, setDistance] = useState(500);
+  const [rating, setRating] = useState('');
+  const [ratingBadge, setRatingBadge] = useState('');
 
    useEffect(()  => {
     console.log('hi')
@@ -54,32 +56,28 @@ const CarDetails = () => {
     setAnnualFuelCost(getAnnualFuelCost);
   }, []);
 
-  useEffect(()=>{
-      const fetchOilPrices = async () => {
-          try {
-            const response = await fetch(`http://127.0.0.1:8000/FuelDeal/api/getOilPrice`);
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            setOilPrice91(data.oil91)
-            setOilPrice95(data.oil95)
-          } catch (error) {
-            console.error('Error fetching car details:', error);
-          }
-        };
-        fetchOilPrices();
-  },[])
   
   useEffect(()=>{
-      const fuelCons = 17.6;
-      // if(car != 1){
         setFuelPrice91((car.tank*oilPrice91)*data)
         setFuelPrice95((car.tank*oilPrice95)*data)
-        setDistance(data*(fuelCons*car.tank))
-      // }
-  }, [data])
+        setDistance(data*(car.fuel_cons*car.tank))
+  }, [data, car, oilPrice91, oilPrice95])
 
+  useEffect(() => {
+    if (car.fuel_cons > 15) {
+      setRating('excellent');
+      setRatingBadge('badge excellent');
+    } else if (car.fuel_cons > 13) {
+      setRating('good');
+      setRatingBadge('badge good');
+    } else if (car.fuel_cons > 10) {
+      setRating('average');
+      setRatingBadge('badge average');
+    } else {
+      setRating('very poor');
+      setRatingBadge('badge very-poor');
+    }
+  }, [car.fuel_cons]);
 
   return ( car && 
     <>
@@ -105,10 +103,10 @@ const CarDetails = () => {
               </div>
               <div className="car-info">
               <div className="fuel-econmy">Car Price: {car.price} <p id="sr">SR</p></div>
-                  <p>Tank Size: {car.tank}</p>
-                  <div className="fuel-econmy">Fuel Economy: {car.fuel_cons}km/L <p className="badge">Good</p></div>
+                  <p>Tank Size: {car.tank}L</p>
+                  <div className="fuel-econmy">Fuel Economy: {car.fuel_cons}km/L <p className={ratingBadge}>{rating}</p></div>
                   <br/>
-                  <div className="fuel-econmy">Fuel Annual Cost: {annualFuelCost} <p id="sr">SR</p></div>
+                  <div className="fuel-econmy">Fuel Annual Cost: {(car.tank * 2.24 * 24).toFixed(0)} <p id="sr">SR</p></div>
               </div>
           </div>
           <img src={`https://fueldealpics.blob.core.windows.net/cars/${car.model_name}.png`} alt={`${car.model_name}`} />
