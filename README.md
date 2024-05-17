@@ -2,8 +2,7 @@
 
 FuelDeal is an easy-to-use app that helps you find the fuel prices for cars and check the ratings fuel efficiency.
 
-
-![TEST](https://github.com/FuelDeal/FuelDeal/assets/97407222/f1f5e5b3-1f21-47ac-8c17-d6d6fceb8fa8)
+![Uploading corolla.png…]()
 
 ![image](https://github.com/FuelDeal/FuelDeal/assets/98516524/c4cccfc3-2a4d-4ad6-bffb-f1e6eb91fe9f)
 
