@@ -79,10 +79,10 @@ const CarDetails = () => {
     }
   }, [car.fuel_cons]);
 
-  return ( car && 
+  return ( car.model_name && 
     <>
       <div className="car-details-wrapper">
-          <h1>{manufacturer_name} {car.model_name}</h1>
+          <h1>{manufacturer_name.toUpperCase()} {car.model_name.toUpperCase()}</h1>
           <div className="card-details">
               <br/>
               <div className="fuel-prices">

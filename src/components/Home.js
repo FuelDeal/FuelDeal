@@ -78,7 +78,7 @@ function Home() {
             <option value="">Pick from the list</option>
             {manufacturers.map((manufacturer) => (
               <option key={manufacturer.id} value={manufacturer.manu_name}>
-                {manufacturer.manu_name}
+                {manufacturer.manu_name.toUpperCase()}
               </option>
             ))}
           </select>
